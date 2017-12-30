@@ -86,8 +86,16 @@ set(RENDER_TEXTURE_SRC
 )
 source_group("render texture" FILES ${RENDER_TEXTURE_SRC})
 
+
+# define the sfml-graphics target
+sfml_add_library(sfml-graphics
+                 SOURCES ${SRC} ${DRAWABLES_SRC} ${RENDER_TEXTURE_SRC} ${STB_SRC})
+
+# setup dependencies
+target_link_libraries(sfml-graphics PRIVATE sfml-window sfml-system)
+
 # stb_image sources
-include_directories("${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
+target_include_directories(sfml-graphics PRIVATE sfml-window PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
 
 # let CMake know about our additional graphics libraries paths
 if(SFML_OS_WINDOWS)
@@ -102,53 +110,43 @@ elseif(SFML_OS_ANDROID)
 endif()
 
 # find external libraries
-if(NOT SFML_OPENGL_ES)
+if(SFML_OPENGL_ES)
+    if (SFML_OS_LINUX)
+        find_package(EGL REQUIRED)
+        find_package(GLES REQUIRED)
+        target_include_directories(sfml-graphics PRIVATE ${EGL_INCLUDE_DIR} ${GLES_INCLUDE_DIR})
+        target_link_libraries(sfml-graphics PRIVATE ${EGL_LIBRARY} ${GLES_LIBRARY})
+    elseif(SFML_OS_IOS)
+        target_link_libraries(sfml-graphics PRIVATE "-framework OpenGLES")
+    endif()
+else()
     find_package(OpenGL REQUIRED)
+    target_link_libraries(sfml-graphics PRIVATE ${OPENGL_gl_LIBRARY})
+    target_include_directories(sfml-graphics PRIVATE ${OPENGL_INCLUDE_DIR})
+
     if(SFML_OS_LINUX)
         find_package(X11 REQUIRED)
+        target_link_libraries(sfml-graphics PRIVATE ${X11_LIBRARIES})
     endif()
-    include_directories(${FREETYPE_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR})
 endif()
-if(SFML_OPENGL_ES AND SFML_OS_LINUX)
-    find_package(EGL REQUIRED)
-    find_package(GLES REQUIRED)
-    include_directories(${EGL_INCLUDE_DIR} ${GLES_INCLUDE_DIR})
+
+if(SFML_OS_ANDROID)
+    target_link_libraries(sfml-graphics PRIVATE z)
 endif()
+
 if(SFML_OS_ANDROID)
     find_host_package(Freetype REQUIRED)
 else()
     find_package(Freetype REQUIRED)
 endif()
-include_directories(${FREETYPE_INCLUDE_DIRS})
-
-# build the list of external libraries to link
-if(NOT SFML_OPENGL_ES)
-    list(APPEND GRAPHICS_EXT_LIBS ${OPENGL_gl_LIBRARY})
-    if(SFML_OS_LINUX)
-        list(APPEND GRAPHICS_EXT_LIBS ${X11_LIBRARIES})
-    endif()
-endif()
-if(SFML_OPENGL_ES AND SFML_OS_LINUX)
-    list(APPEND GRAPHICS_EXT_LIBS ${EGL_LIBRARY} ${GLES_LIBRARY})
-endif()
-if(SFML_OS_IOS)
-    list(APPEND GRAPHICS_EXT_LIBS "-framework OpenGLES")
-elseif(SFML_OS_ANDROID)
-    list(APPEND GRAPHICS_EXT_LIBS z)
-endif()
-list(APPEND GRAPHICS_EXT_LIBS ${FREETYPE_LIBRARY})
+target_include_directories(sfml-graphics PRIVATE ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(sfml-graphics PRIVATE ${FREETYPE_LIBRARY})
 
 # add preprocessor symbols
-add_definitions(-DSTBI_FAILURE_USERMSG)
+target_compile_definitions(sfml-graphics PRIVATE -DSTBI_FAILURE_USERMSG)
 
 # ImageLoader.cpp must be compiled with the -fno-strict-aliasing
 # when gcc is used; otherwise saving PNGs may crash in stb_image_write
 if(SFML_COMPILER_GCC)
     set_source_files_properties(${SRCROOT}/ImageLoader.cpp PROPERTIES COMPILE_FLAGS -fno-strict-aliasing)
 endif()
-
-# define the sfml-graphics target
-sfml_add_library(sfml-graphics
-                 SOURCES ${SRC} ${DRAWABLES_SRC} ${RENDER_TEXTURE_SRC} ${STB_SRC}
-                 DEPENDS sfml-window sfml-system
-                 EXTERNAL_LIBS ${GRAPHICS_EXT_LIBS})

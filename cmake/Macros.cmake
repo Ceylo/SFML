@@ -2,13 +2,14 @@ include(CMakeParseArguments)
 
 # add a new target which is a SFML library
 # ex: sfml_add_library(sfml-graphics
-#                      SOURCES sprite.cpp image.cpp ...
-#                      DEPENDS sfml-window sfml-system
-#                      EXTERNAL_LIBS opengl freetype ...)
+#                      SOURCES sprite.cpp image.cpp ...)
 macro(sfml_add_library target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "" "" "SOURCES;DEPENDS;EXTERNAL_LIBS" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "SOURCES" ${ARGN})
+    if (NOT "${THIS_UNPARSED_ARGUMENTS}" STREQUAL "")
+        message(FATAL_ERROR "Extra unparsed arguments when calling sfml_add_library: ${THIS_UNPARSED_ARGUMENTS}")
+    endif()
 
     # create the target
     add_library(${target} ${THIS_SOURCES})
@@ -87,11 +88,6 @@ macro(sfml_add_library target)
         set_target_properties(${target} PROPERTIES COMPILE_FLAGS -fvisibility=hidden)
     endif()
 
-    # link the target to its SFML dependencies
-    if(THIS_DEPENDS)
-        target_link_libraries(${target} ${THIS_DEPENDS})
-    endif()
-
     # build frameworks or dylibs
     if(SFML_OS_MACOSX AND BUILD_SHARED_LIBS)
         if(SFML_BUILD_FRAMEWORKS)
@@ -135,17 +131,18 @@ macro(sfml_add_library target)
         endif()
     endif()
 
-    # link the target to its external dependencies
-    if(THIS_EXTERNAL_LIBS)
-        target_link_libraries(${target} ${THIS_EXTERNAL_LIBS})
-    endif()
-
     # add the install rule
-    install(TARGETS ${target}
+    install(TARGETS ${target} EXPORT SFMLConfigExport
             RUNTIME DESTINATION bin COMPONENT bin
             LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT bin
             ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT devel
             FRAMEWORK DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX} COMPONENT bin)
+
+    # add <project>/include as public include directory
+    # the first one is for the local package and the second one is for the installed package
+    target_include_directories(${target} PUBLIC
+                               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                               $<INSTALL_INTERFACE:include>)
 endmacro()
 
 # add a new target which is a SFML example

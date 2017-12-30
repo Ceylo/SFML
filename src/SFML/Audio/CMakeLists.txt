@@ -65,7 +65,7 @@ elseif(SFML_OS_ANDROID)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/android")
 endif()
 
-# find external libraries
+# setup dependencies
 if(NOT SFML_OS_ANDROID)
     if(NOT SFML_OS_IOS)
         find_package(OpenAL REQUIRED)
@@ -78,27 +78,24 @@ else()
     find_host_package(FLAC REQUIRED)
 endif()
 
-if(NOT SFML_OS_IOS)
-    include_directories(${OPENAL_INCLUDE_DIR})
-endif()
-include_directories(${VORBIS_INCLUDE_DIRS})
-include_directories(${FLAC_INCLUDE_DIR})
-add_definitions(-DOV_EXCLUDE_STATIC_CALLBACKS) # avoids warnings in vorbisfile.h
-add_definitions(-DFLAC__NO_DLL)
-
-# build the list of external libraries to link
-if(SFML_OS_IOS)
-    list(APPEND AUDIO_EXT_LIBS "-framework OpenAL")
-else()
-    list(APPEND AUDIO_EXT_LIBS ${OPENAL_LIBRARY})
-endif()
-if(SFML_OS_ANDROID)
-    list(APPEND AUDIO_EXT_LIBS android OpenSLES)
-endif()
-list(APPEND AUDIO_EXT_LIBS ${VORBIS_LIBRARIES} ${FLAC_LIBRARY})
-
 # define the sfml-audio target
 sfml_add_library(sfml-audio
-                 SOURCES ${SRC} ${CODECS_SRC}
-                 DEPENDS sfml-system
-                 EXTERNAL_LIBS ${AUDIO_EXT_LIBS})
+                 SOURCES ${SRC} ${CODECS_SRC})
+
+# setup dependencies
+if(SFML_OS_IOS)
+    target_link_libraries(sfml-audio PRIVATE "-framework OpenAL")
+else()
+    target_include_directories(sfml-audio PRIVATE ${OPENAL_INCLUDE_DIR})
+    target_link_libraries(sfml-audio PRIVATE ${OPENAL_LIBRARY})
+endif()
+
+if(SFML_OS_ANDROID)
+    target_link_libraries(sfml-audio PRIVATE android OpenSLES)
+endif()
+
+target_include_directories(sfml-audio PRIVATE ${VORBIS_INCLUDE_DIRS} ${FLAC_INCLUDE_DIR})
+target_link_libraries(sfml-audio PRIVATE sfml-system ${VORBIS_LIBRARIES} ${FLAC_LIBRARY})
+target_compile_definitions(sfml-audio PRIVATE
+                           -DOV_EXCLUDE_STATIC_CALLBACKS # avoids warnings in vorbisfile.h
+                           -DFLAC__NO_DLL)
