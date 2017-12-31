@@ -131,7 +131,7 @@ else()
 endif()
 
 if(SFML_OS_ANDROID)
-    target_link_libraries(sfml-graphics PRIVATE z)
+    target_link_libraries(sfml-graphics PRIVATE z EGL GLESv1_CM)
 endif()
 
 if(SFML_OS_ANDROID)
