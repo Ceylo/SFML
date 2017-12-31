@@ -124,59 +124,44 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
     string(TOUPPER ${FIND_SFML_COMPONENT} FIND_SFML_COMPONENT_UPPER)
     set(FIND_SFML_COMPONENT_NAME sfml-${FIND_SFML_COMPONENT_LOWER})
 
-    # no suffix for sfml-main, it is always a static library
-    if(FIND_SFML_COMPONENT_LOWER STREQUAL "main")
-        # release library
-        find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
-                     NAMES ${FIND_SFML_COMPONENT_NAME}
-                     PATH_SUFFIXES lib64 lib
-                     PATHS ${FIND_SFML_PATHS})
+    # static release library
+    find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE
+                 NAMES ${FIND_SFML_COMPONENT_NAME}-s
+                 PATH_SUFFIXES lib64 lib
+                 PATHS ${FIND_SFML_PATHS})
 
-        # debug library
-        find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
-                     NAMES ${FIND_SFML_COMPONENT_NAME}-d
-                     PATH_SUFFIXES lib64 lib
-                     PATHS ${FIND_SFML_PATHS})
+    # static debug library
+    find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG
+                 NAMES ${FIND_SFML_COMPONENT_NAME}-s-d
+                 PATH_SUFFIXES lib64 lib
+                 PATHS ${FIND_SFML_PATHS})
+
+    # dynamic release library
+    find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE
+                 NAMES ${FIND_SFML_COMPONENT_NAME}
+                 PATH_SUFFIXES lib64 lib
+                 PATHS ${FIND_SFML_PATHS})
+
+    # dynamic debug library
+    find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG
+                 NAMES ${FIND_SFML_COMPONENT_NAME}-d
+                 PATH_SUFFIXES lib64 lib
+                 PATHS ${FIND_SFML_PATHS})
+
+    # choose the entries that fit the requested link type
+    if(SFML_STATIC_LIBRARIES)
+        if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE)
+            set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE})
+        endif()
+        if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG)
+            set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG})
+        endif()
     else()
-        # static release library
-        find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE
-                     NAMES ${FIND_SFML_COMPONENT_NAME}-s
-                     PATH_SUFFIXES lib64 lib
-                     PATHS ${FIND_SFML_PATHS})
-
-        # static debug library
-        find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG
-                     NAMES ${FIND_SFML_COMPONENT_NAME}-s-d
-                     PATH_SUFFIXES lib64 lib
-                     PATHS ${FIND_SFML_PATHS})
-
-        # dynamic release library
-        find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE
-                     NAMES ${FIND_SFML_COMPONENT_NAME}
-                     PATH_SUFFIXES lib64 lib
-                     PATHS ${FIND_SFML_PATHS})
-
-        # dynamic debug library
-        find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG
-                     NAMES ${FIND_SFML_COMPONENT_NAME}-d
-                     PATH_SUFFIXES lib64 lib
-                     PATHS ${FIND_SFML_PATHS})
-
-        # choose the entries that fit the requested link type
-        if(SFML_STATIC_LIBRARIES)
-            if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE)
-                set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE})
-            endif()
-            if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG)
-                set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG})
-            endif()
-        else()
-            if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE)
-                set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE})
-            endif()
-            if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG)
-                set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG})
-            endif()
+        if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE)
+            set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE})
+        endif()
+        if(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG)
+            set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG})
         endif()
     endif()
 
