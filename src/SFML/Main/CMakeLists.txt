@@ -12,22 +12,9 @@ elseif(SFML_OS_ANDROID)
 else()
     return()
 endif()
-source_group("" FILES ${SRC})
 
 # define the sfml-main target
-add_library(sfml-main STATIC ${SRC})
-
-# set the debug suffix
-set_target_properties(sfml-main PROPERTIES DEBUG_POSTFIX -d)
-
-# insert the major version number in the output filename
-set_target_properties(sfml-main PROPERTIES OUTPUT_NAME "sfml-main")
-
-# set the target's folder (for IDEs that support it, e.g. Visual Studio)
-set_target_properties(sfml-main PROPERTIES FOLDER "SFML")
-
-# setup the install rule
-install(TARGETS sfml-main ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT devel)
+sfml_add_library(sfml-main STATIC_ONLY SOURCES ${SRC})
 
 # because of a current limitation on Android (which prevents one library
 # from depending on shared libraries), we need a boostrap activity which
