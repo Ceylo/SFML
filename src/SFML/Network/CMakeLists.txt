@@ -49,7 +49,7 @@ sfml_add_library(sfml-network
                  SOURCES ${SRC})
 
 # setup dependencies
-target_link_libraries(sfml-network PRIVATE sfml-system)
+target_link_libraries(sfml-network PUBLIC sfml-system)
 if(SFML_OS_WINDOWS)
     target_link_libraries(sfml-network PRIVATE ${NETWORK_EXT_LIBS} ws2_32)
 endif()

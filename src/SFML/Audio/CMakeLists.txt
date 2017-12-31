@@ -95,7 +95,9 @@ if(SFML_OS_ANDROID)
 endif()
 
 target_include_directories(sfml-audio PRIVATE ${VORBIS_INCLUDE_DIRS} ${FLAC_INCLUDE_DIR})
-target_link_libraries(sfml-audio PRIVATE sfml-system ${VORBIS_LIBRARIES} ${FLAC_LIBRARY})
+target_link_libraries(sfml-audio
+                      PUBLIC sfml-system
+                      PRIVATE ${VORBIS_LIBRARIES} ${FLAC_LIBRARY})
 target_compile_definitions(sfml-audio PRIVATE
                            -DOV_EXCLUDE_STATIC_CALLBACKS # avoids warnings in vorbisfile.h
                            -DFLAC__NO_DLL)

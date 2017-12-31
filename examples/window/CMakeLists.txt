@@ -12,4 +12,4 @@ set(ADDITIONAL_LIBRARIES ${OPENGL_LIBRARIES})
 # define the window target
 sfml_add_example(window GUI_APP
                  SOURCES ${SRC}
-                 DEPENDS sfml-window sfml-system ${ADDITIONAL_LIBRARIES})
+                 DEPENDS sfml-window ${ADDITIONAL_LIBRARIES})

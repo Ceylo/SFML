@@ -153,7 +153,7 @@ endmacro()
 # add a new target which is a SFML example
 # ex: sfml_add_example(ftp
 #                      SOURCES ftp.cpp ...
-#                      DEPENDS sfml-network sfml-system)
+#                      DEPENDS sfml-network)
 macro(sfml_add_example target)
 
     # parse the arguments
@@ -165,7 +165,7 @@ macro(sfml_add_example target)
     # create the target
     if(THIS_GUI_APP AND SFML_OS_WINDOWS AND NOT DEFINED CMAKE_CONFIGURATION_TYPES AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
         add_executable(${target} WIN32 ${THIS_SOURCES})
-        target_link_libraries(${target} sfml-main)
+        target_link_libraries(${target} PRIVATE sfml-main)
     else()
         add_executable(${target} ${THIS_SOURCES})
     endif()

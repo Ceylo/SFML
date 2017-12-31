@@ -12,4 +12,4 @@ set(ADDITIONAL_LIBRARIES ${OPENGL_LIBRARIES})
 # define the opengl target
 sfml_add_example(opengl GUI_APP
                  SOURCES ${SRC}
-                 DEPENDS sfml-graphics sfml-window sfml-system ${ADDITIONAL_LIBRARIES})
+                 DEPENDS sfml-graphics ${ADDITIONAL_LIBRARIES})

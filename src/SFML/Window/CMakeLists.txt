@@ -221,7 +221,7 @@ endif()
 # define the sfml-window target
 sfml_add_library(sfml-window
                  SOURCES ${SRC} ${PLATFORM_SRC})
-target_link_libraries(sfml-window PRIVATE sfml-system)
+target_link_libraries(sfml-window PUBLIC sfml-system)
 
 # find and setup usage for external libraries
 if(SFML_OS_LINUX OR SFML_OS_FREEBSD)

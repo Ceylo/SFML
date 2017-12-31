@@ -27,7 +27,7 @@ set_source_files_properties(${RESOURCES} PROPERTIES
 set_target_properties(cocoa PROPERTIES
                       MACOSX_BUNDLE_INFO_PLIST ${SRCROOT}/resources/Cocoa-Info.plist)
 target_link_libraries(cocoa "-framework Cocoa -framework Foundation"
-                            sfml-system sfml-window sfml-graphics)
+                            sfml-graphics)
 
 # set the target's folder (for IDEs that support it, e.g. Visual Studio)
 set_target_properties(cocoa PROPERTIES FOLDER "Examples")
@@ -62,6 +62,6 @@ install(TARGETS cocoa
 #
 #sfml_add_example(cocoa
 #                 SOURCES ${SRC}
-#                 DEPENDS sfml-system sfml-window sfml-graphics)
+#                 DEPENDS sfml-graphics)
 #
 

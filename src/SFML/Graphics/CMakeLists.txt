@@ -92,10 +92,10 @@ sfml_add_library(sfml-graphics
                  SOURCES ${SRC} ${DRAWABLES_SRC} ${RENDER_TEXTURE_SRC} ${STB_SRC})
 
 # setup dependencies
-target_link_libraries(sfml-graphics PRIVATE sfml-window sfml-system)
+target_link_libraries(sfml-graphics PUBLIC sfml-window)
 
 # stb_image sources
-target_include_directories(sfml-graphics PRIVATE sfml-window PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
+target_include_directories(sfml-graphics PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
 
 # let CMake know about our additional graphics libraries paths
 if(SFML_OS_WINDOWS)
