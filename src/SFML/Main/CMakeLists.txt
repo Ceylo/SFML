@@ -16,6 +16,13 @@ endif()
 # define the sfml-main target
 sfml_add_library(sfml-main STATIC_ONLY SOURCES ${SRC})
 
+# overwrite sfml-main suffix for backward compatibility of FindSFML.cmake
+set_target_properties(sfml-main PROPERTIES
+                      DEBUG_POSTFIX -d
+                      RELEASE_POSTFIX ""
+                      MINSIZEREL_POSTFIX ""
+                      RELWITHDEBINFO_POSTFIX "")
+
 # because of a current limitation on Android (which prevents one library
 # from depending on shared libraries), we need a boostrap activity which
 # will load our shared libraries manually
