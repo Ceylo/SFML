@@ -527,5 +527,4 @@ elseif(SFML_OS_ANDROID)
 
 endif()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/export/SFMLConfigExport.cmake)
 sfml_export_targets()
