@@ -65,17 +65,17 @@ elseif(SFML_OS_ANDROID)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/android")
 endif()
 
-# setup dependencies
-if(NOT SFML_OS_ANDROID)
+# find external libraries
+if(SFML_OS_ANDROID OR SFML_OS_IOS)
     if(NOT SFML_OS_IOS)
-        find_package(OpenAL REQUIRED)
+        find_host_package(OpenAL REQUIRED)
     endif()
-    find_package(Vorbis REQUIRED)
-    find_package(FLAC REQUIRED)
-else()
-    find_host_package(OpenAL REQUIRED)
     find_host_package(Vorbis REQUIRED)
     find_host_package(FLAC REQUIRED)
+else()
+    find_package(OpenAL REQUIRED)
+    find_package(Vorbis REQUIRED)
+    find_package(FLAC REQUIRED)
 endif()
 
 # define the sfml-audio target

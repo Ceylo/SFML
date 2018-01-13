@@ -134,7 +134,7 @@ if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z EGL GLESv1_CM)
 endif()
 
-if(SFML_OS_ANDROID)
+if(SFML_OS_ANDROID OR SFML_OS_IOS)
     find_host_package(Freetype REQUIRED)
 else()
     find_package(Freetype REQUIRED)
