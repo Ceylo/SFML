@@ -8,6 +8,7 @@ set(targets_config_file "${CMAKE_CURRENT_LIST_DIR}/SFML${config_name}Targets.cma
 
 if (EXISTS "${targets_config_file}")
     include("${targets_config_file}")
+    message(STATUS "Found SFML ${SFML_VERSION_MAJOR}.${SFML_VERSION_MINOR}.${SFML_VERSION_PATCH} in ${CMAKE_CURRENT_LIST_DIR}")
 
     # CMake makes it a bit hard to populate INTERFACE include directories for frameworks,
     # especially because to include them you have to use -F instead of -I or -isystem
