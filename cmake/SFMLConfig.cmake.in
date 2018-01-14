@@ -1,1 +1,36 @@
-include("${CMAKE_CURRENT_LIST_DIR}/SFMLTargets.cmake")
+
+if (SFML_STATIC_LIBRARIES)
+    set(config_name "Static")
+else()
+    set(config_name "Shared")
+endif()
+set(targets_config_file "${CMAKE_CURRENT_LIST_DIR}/SFML${config_name}Targets.cmake")
+
+if (EXISTS "${targets_config_file}")
+    include("${targets_config_file}")
+
+    # CMake makes it a bit hard to populate INTERFACE include directories for frameworks,
+    # especially because to include them you have to use -F instead of -I or -isystem
+    # So if we've imported a framework, we afterward fix the way it should be included by dependees
+    if (APPLE)
+        # This file gets installed in SFML.framework/Resources/CMake
+        # We compute the base dir for framework inclusion here so that it remains up-to-date if the set of
+        # SFML frameworks is moved out of the standard install dir (and user sets SFML_DIR)
+        get_filename_component(framework_base_dir "../../.." ABSOLUTE BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
+        foreach(target sfml-system sfml-audio sfml-window sfml-graphics sfml-network)
+            get_target_property(is_framework ${target} FRAMEWORK)
+            if (is_framework)
+                get_target_property(compile_options ${target} INTERFACE_COMPILE_OPTIONS)
+                if (compile_options)
+                    list(APPEND compile_options "-F${framework_base_dir}")
+                else()
+                    set(compile_options "-F${framework_base_dir}")
+                endif()
+                set_target_properties(${target} PROPERTIES INTERFACE_COMPILE_OPTIONS "${compile_options}")
+            endif()
+        endforeach()
+    endif()
+else()
+    message(WARNING "Ignored non-existing file '${targets_config_file}'")
+endif()

@@ -141,13 +141,16 @@ macro(sfml_add_library target)
             RUNTIME DESTINATION bin COMPONENT bin
             LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT bin
             ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT devel
-            FRAMEWORK DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX} COMPONENT bin)
+            FRAMEWORK DESTINATION "." COMPONENT bin)
 
     # add <project>/include as public include directory
     # the first one is for the local package and the second one is for the installed package
     target_include_directories(${target} PUBLIC
-                               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-                               $<INSTALL_INTERFACE:include>)
+                               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+
+    if (NOT SFML_BUILD_FRAMEWORKS)
+        target_include_directories(${target} INTERFACE $<INSTALL_INTERFACE:include>)
+    endif()
 endmacro()
 
 # add a new target which is a SFML example
@@ -244,19 +247,31 @@ function(sfml_export_targets)
                                      VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
                                      COMPATIBILITY SameMajorVersion)
 
-    export(EXPORT SFMLConfigExport
-           FILE "${CMAKE_CURRENT_BINARY_DIR}/SFMLTargets.cmake")
+    if (BUILD_SHARED_LIBS)
+        set(config_name "Shared")
+    else()
+        set(config_name "Static")
+    endif()
+    set(targets_config_filename "SFML${config_name}Targets.cmake")
 
-    set(ConfigPackageLocation lib/cmake/SFML)
+    export(EXPORT SFMLConfigExport
+           FILE "${CMAKE_CURRENT_BINARY_DIR}/${targets_config_filename}")
+
+    if (SFML_BUILD_FRAMEWORKS)
+        set(config_package_location "SFML.framework/Resources/CMake")
+    else()
+        set(config_package_location lib/cmake/SFML)
+    endif()
     configure_package_config_file("${CURRENT_DIR}/SFMLConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfig.cmake"
-        INSTALL_DESTINATION "${ConfigPackageLocation}")
+        INSTALL_DESTINATION "${config_package_location}")
+
 
     install(EXPORT SFMLConfigExport
-            FILE SFMLTargets.cmake
-            DESTINATION ${ConfigPackageLocation})
+            FILE ${targets_config_filename}
+            DESTINATION ${config_package_location})
 
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfigVersion.cmake"
-            DESTINATION ${ConfigPackageLocation}
+            DESTINATION ${config_package_location}
             COMPONENT devel)
 endfunction()
 

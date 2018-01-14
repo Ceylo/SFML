@@ -411,7 +411,7 @@ else()
 
     # install rule
     install(TARGETS SFML
-            FRAMEWORK DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX}
+            FRAMEWORK DESTINATION "."
             COMPONENT devel)
 endif()
 
