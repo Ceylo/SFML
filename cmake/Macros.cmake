@@ -153,6 +153,12 @@ macro(sfml_add_library target)
     else()
         target_include_directories(${target} INTERFACE $<INSTALL_INTERFACE:include>)
     endif()
+
+    # define SFML_STATIC if the build type is not set to 'shared'
+    if(NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(${target} PUBLIC "SFML_STATIC")
+    endif()
+
 endmacro()
 
 # add a new target which is a SFML example

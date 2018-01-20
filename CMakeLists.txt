@@ -152,11 +152,6 @@ else()
     unset(ANDROID_NDK CACHE)
 endif()
 
-# define SFML_STATIC if the build type is not set to 'shared'
-if(NOT BUILD_SHARED_LIBS)
-    add_definitions(-DSFML_STATIC)
-endif()
-
 # force building sfml-window, if sfml-graphics module is built
 if(SFML_BUILD_GRAPHICS AND NOT SFML_BUILD_WINDOW)
     message(WARNING "You're trying to build SFML's Graphics module without the Window module. Forcing building of the Window module as a dependency.")
