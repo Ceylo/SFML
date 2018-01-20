@@ -148,7 +148,9 @@ macro(sfml_add_library target)
     target_include_directories(${target} PUBLIC
                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
 
-    if (NOT SFML_BUILD_FRAMEWORKS)
+    if (SFML_BUILD_FRAMEWORKS)
+        target_include_directories(${target} INTERFACE $<INSTALL_INTERFACE:SFML.framework>)
+    else()
         target_include_directories(${target} INTERFACE $<INSTALL_INTERFACE:include>)
     endif()
 endmacro()
