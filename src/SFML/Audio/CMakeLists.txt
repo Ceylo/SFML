@@ -68,15 +68,19 @@ endif()
 # find external libraries
 if(SFML_OS_ANDROID OR SFML_OS_IOS)
     if(NOT SFML_OS_IOS)
-        find_host_package(OpenAL REQUIRED)
+        sfml_find_package(OpenAL REQUIRED HOST_SEARCH INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
     endif()
-    find_host_package(Vorbis REQUIRED)
-    find_host_package(FLAC REQUIRED)
+    sfml_find_package(Vorbis REQUIRED HOST_SEARCH INCLUDE "VORBIS_INCLUDE_DIRS" LINK "VORBIS_LIBRARIES")
+    sfml_find_package(FLAC REQUIRED HOST_SEARCH INCLUDE "FLAC_INCLUDE_DIR" LINK "FLAC_LIBRARY")
 else()
-    find_package(OpenAL REQUIRED)
-    find_package(Vorbis REQUIRED)
-    find_package(FLAC REQUIRED)
+    sfml_find_package(OpenAL REQUIRED INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
+    sfml_find_package(Vorbis REQUIRED INCLUDE "VORBIS_INCLUDE_DIRS" LINK "VORBIS_LIBRARIES")
+    sfml_find_package(FLAC REQUIRED INCLUDE "FLAC_INCLUDE_DIR" LINK "FLAC_LIBRARY")
 endif()
+
+# avoids warnings in vorbisfile.h
+target_compile_definitions(Vorbis INTERFACE "OV_EXCLUDE_STATIC_CALLBACKS")
+target_compile_definitions(FLAC INTERFACE "FLAC__NO_DLL")
 
 # define the sfml-audio target
 sfml_add_library(sfml-audio
@@ -86,18 +90,13 @@ sfml_add_library(sfml-audio
 if(SFML_OS_IOS)
     target_link_libraries(sfml-audio PRIVATE "-framework OpenAL")
 else()
-    target_include_directories(sfml-audio PRIVATE ${OPENAL_INCLUDE_DIR})
-    target_link_libraries(sfml-audio PRIVATE ${OPENAL_LIBRARY})
+    target_link_libraries(sfml-audio PRIVATE OpenAL)
 endif()
 
 if(SFML_OS_ANDROID)
     target_link_libraries(sfml-audio PRIVATE android OpenSLES)
 endif()
 
-target_include_directories(sfml-audio PRIVATE ${VORBIS_INCLUDE_DIRS} ${FLAC_INCLUDE_DIR})
 target_link_libraries(sfml-audio
                       PUBLIC sfml-system
-                      PRIVATE ${VORBIS_LIBRARIES} ${FLAC_LIBRARY})
-target_compile_definitions(sfml-audio PRIVATE
-                           -DOV_EXCLUDE_STATIC_CALLBACKS # avoids warnings in vorbisfile.h
-                           -DFLAC__NO_DLL)
+                      PRIVATE Vorbis FLAC)

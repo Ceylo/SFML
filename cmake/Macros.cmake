@@ -144,9 +144,9 @@ macro(sfml_add_library target)
             FRAMEWORK DESTINATION "." COMPONENT bin)
 
     # add <project>/include as public include directory
-    # the first one is for the local package and the second one is for the installed package
-    target_include_directories(${target} PUBLIC
-                               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+    target_include_directories(${target}
+                               PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                               PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
     if (SFML_BUILD_FRAMEWORKS)
         target_include_directories(${target} INTERFACE $<INSTALL_INTERFACE:SFML.framework>)
@@ -246,6 +246,63 @@ if(CMAKE_VS_PLATFORM_NAME STREQUAL "Tegra-Android")
     endmacro()
 endif()
 
+# Find the requested package and make an INTERFACE library from it
+# Usage: sfml_find_package(wanted_target_name [REQUIRED]
+#                          [HOST_SEARCH]                    # Use find_host_package() instead of find_package()
+#                          [INCLUDE "OPENGL_INCLUDE_DIR"]
+#                          [LINK "OPENGL_gl_LIBRARY"])
+function(sfml_find_package)
+    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules/")
+    list(GET ARGN 0 target)
+    list(REMOVE_AT ARGN 0)
+
+    if (TARGET ${target})
+        message(FATAL_ERROR "Target '${target}' is already defined")
+    endif()
+
+    cmake_parse_arguments(THIS "REQUIRED;HOST_SEARCH" "" "INCLUDE;LINK" ${ARGN})
+    if (THIS_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "Unknown arguments when calling sfml_import_library: ${THIS_UNPARSED_ARGUMENTS}")
+    endif()
+
+    if (THIS_HOST_SEARCH)
+        if (THIS_REQUIRED)
+            find_host_package(${target} REQUIRED)
+        else()
+            find_host_package(${target})
+        endif()
+    else()
+        if (THIS_REQUIRED)
+            find_package(${target} REQUIRED)
+        else()
+            find_package(${target})
+        endif()
+    endif()
+
+    add_library(${target} INTERFACE)
+
+    if (THIS_INCLUDE)
+        foreach(include_dir IN LISTS "${THIS_INCLUDE}")
+            if (NOT include_dir)
+                message(FATAL_ERROR "No path given for include dir ${THIS_INCLUDE}")
+            endif()
+            target_include_directories(${target} INTERFACE "$<BUILD_INTERFACE:${include_dir}>")
+        endforeach()
+    endif()
+
+    if (THIS_LINK)
+        foreach(link_item IN LISTS "${THIS_LINK}")
+            if (NOT link_item)
+                message(FATAL_ERROR "Missing item in ${THIS_LINK}")
+            endif()
+            target_link_libraries(${target} INTERFACE "$<BUILD_INTERFACE:${${THIS_LINK}}>")
+        endforeach()
+    endif()
+    install(TARGETS ${target} EXPORT SFMLConfigExport)
+endfunction()
+
+# Generate a SFMLConfig.cmake file (and associated files) from the targets registered against
+# the EXPORT name "SFMLConfigExport" (EXPORT parameter of install(TARGETS))
 function(sfml_export_targets)
     # CMAKE_CURRENT_LIST_DIR or CMAKE_CURRENT_SOURCE_DIR not usable for files that are to be included like this one
     set(CURRENT_DIR "${PROJECT_SOURCE_DIR}/cmake")
