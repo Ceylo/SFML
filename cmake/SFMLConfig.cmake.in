@@ -8,6 +8,8 @@ set(targets_config_file "${CMAKE_CURRENT_LIST_DIR}/SFML${config_name}Targets.cma
 
 if (EXISTS "${targets_config_file}")
     include("${targets_config_file}")
+    include("${CMAKE_CURRENT_LIST_DIR}/SFMLConfigDependencies.cmake")
+
     message(STATUS "Found SFML @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@ in ${CMAKE_CURRENT_LIST_DIR}")
 else()
     message(WARNING "Ignored non-existing file '${targets_config_file}'")

@@ -329,13 +329,17 @@ function(sfml_export_targets)
     endif()
     configure_package_config_file("${CURRENT_DIR}/SFMLConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfig.cmake"
         INSTALL_DESTINATION "${config_package_location}")
+    configure_package_config_file("${CURRENT_DIR}/SFMLConfigDependencies.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfigDependencies.cmake"
+        INSTALL_DESTINATION "${config_package_location}")
 
 
     install(EXPORT SFMLConfigExport
             FILE ${targets_config_filename}
             DESTINATION ${config_package_location})
 
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfigVersion.cmake"
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfig.cmake"
+                  "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfigDependencies.cmake"
+                  "${CMAKE_CURRENT_BINARY_DIR}/SFMLConfigVersion.cmake"
             DESTINATION ${config_package_location}
             COMPONENT devel)
 endfunction()
