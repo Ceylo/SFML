@@ -11,6 +11,6 @@ find_package(X11 REQUIRED)
 include_directories(${X11_INCLUDE_DIR})
 
 # define the X11 target
-sfml_add_example(X11 GUI_APP
+sfml_add_example(X11Example GUI_APP
                  SOURCES ${SRC}
                  DEPENDS sfml-window ${OPENGL_LIBRARIES} ${X11_LIBRARIES})
