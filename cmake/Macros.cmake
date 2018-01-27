@@ -3,17 +3,17 @@ include(CMakeParseArguments)
 # add a new target which is a SFML library
 # ex: sfml_add_library(sfml-graphics
 #                      SOURCES sprite.cpp image.cpp ...
-#                      [STATIC_ONLY]) # Always create a static library and ignore BUILD_SHARED_LIBS
+#                      [STATIC]) # Always create a static library and ignore BUILD_SHARED_LIBS
 macro(sfml_add_library target)
 
     # parse the arguments
-    cmake_parse_arguments(THIS "STATIC_ONLY" "" "SOURCES" ${ARGN})
+    cmake_parse_arguments(THIS "STATIC" "" "SOURCES" ${ARGN})
     if (NOT "${THIS_UNPARSED_ARGUMENTS}" STREQUAL "")
         message(FATAL_ERROR "Extra unparsed arguments when calling sfml_add_library: ${THIS_UNPARSED_ARGUMENTS}")
     endif()
 
     # create the target
-    if (THIS_STATIC_ONLY)
+    if (THIS_STATIC)
         add_library(${target} STATIC ${THIS_SOURCES})
     else()
         add_library(${target} ${THIS_SOURCES})
@@ -25,7 +25,7 @@ macro(sfml_add_library target)
     set_target_properties(${target} PROPERTIES DEFINE_SYMBOL ${NAME_UPPER}_EXPORTS)
 
     # adjust the output file prefix/suffix to match our conventions
-    if(BUILD_SHARED_LIBS AND NOT THIS_STATIC_ONLY)
+    if(BUILD_SHARED_LIBS AND NOT THIS_STATIC)
         if(SFML_OS_WINDOWS)
             # include the major version number in Windows shared library names (but not import library names)
             set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
@@ -74,7 +74,7 @@ macro(sfml_add_library target)
             set(SFML_PDB_POSTFIX "")
         endif()
 
-        if(BUILD_SHARED_LIBS AND NOT THIS_STATIC_ONLY)
+        if(BUILD_SHARED_LIBS AND NOT THIS_STATIC)
             # DLLs export debug symbols in the linker PDB (the compiler PDB is an intermediate file)
             set_target_properties(${target} PROPERTIES
                                   PDB_NAME "${target}${SFML_PDB_POSTFIX}"
@@ -94,7 +94,7 @@ macro(sfml_add_library target)
     endif()
 
     # build frameworks or dylibs
-    if(SFML_OS_MACOSX AND BUILD_SHARED_LIBS AND NOT THIS_STATIC_ONLY)
+    if(SFML_OS_MACOSX AND BUILD_SHARED_LIBS AND NOT THIS_STATIC)
         if(SFML_BUILD_FRAMEWORKS)
             # adapt target to build frameworks instead of dylibs
             set_target_properties(${target} PROPERTIES

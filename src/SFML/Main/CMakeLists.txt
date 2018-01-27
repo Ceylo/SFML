@@ -14,7 +14,7 @@ else()
 endif()
 
 # define the sfml-main target
-sfml_add_library(sfml-main STATIC_ONLY SOURCES ${SRC})
+sfml_add_library(sfml-main STATIC SOURCES ${SRC})
 
 # overwrite sfml-main suffix for backward compatibility of FindSFML.cmake
 set_target_properties(sfml-main PROPERTIES
