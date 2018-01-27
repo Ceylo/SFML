@@ -9,4 +9,5 @@ set(SRC
 # define the shader target
 sfml_add_example(shader GUI_APP
                  SOURCES ${SRC}
-                 DEPENDS sfml-graphics)
+                 DEPENDS sfml-graphics
+                 RESOURCES_DIR resources)
