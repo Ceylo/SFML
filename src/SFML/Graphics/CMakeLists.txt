@@ -134,15 +134,11 @@ if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z EGL GLESv1_CM)
 endif()
 
-if(SFML_OS_ANDROID OR SFML_OS_IOS)
-    sfml_find_package(Freetype REQUIRED HOST_SEARCH INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")
-else()
-    sfml_find_package(Freetype REQUIRED INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")
-endif()
+sfml_find_package(Freetype REQUIRED INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")
 target_link_libraries(sfml-graphics PRIVATE Freetype)
 
 # add preprocessor symbols
-target_compile_definitions(sfml-graphics PRIVATE -DSTBI_FAILURE_USERMSG)
+target_compile_definitions(sfml-graphics PRIVATE "STBI_FAILURE_USERMSG")
 
 # ImageLoader.cpp must be compiled with the -fno-strict-aliasing
 # when gcc is used; otherwise saving PNGs may crash in stb_image_write

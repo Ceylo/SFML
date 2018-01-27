@@ -260,7 +260,6 @@ endif()
 
 # Find the requested package and make an INTERFACE library from it
 # Usage: sfml_find_package(wanted_target_name [REQUIRED]
-#                          [HOST_SEARCH]                    # Use find_host_package() instead of find_package()
 #                          [INCLUDE "OPENGL_INCLUDE_DIR"]
 #                          [LINK "OPENGL_gl_LIBRARY"])
 function(sfml_find_package)
@@ -272,12 +271,12 @@ function(sfml_find_package)
         message(FATAL_ERROR "Target '${target}' is already defined")
     endif()
 
-    cmake_parse_arguments(THIS "REQUIRED;HOST_SEARCH" "" "INCLUDE;LINK" ${ARGN})
+    cmake_parse_arguments(THIS "REQUIRED" "" "INCLUDE;LINK" ${ARGN})
     if (THIS_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unknown arguments when calling sfml_import_library: ${THIS_UNPARSED_ARGUMENTS}")
     endif()
 
-    if (THIS_HOST_SEARCH)
+    if (SFML_OS_ANDROID OR SFML_OS_IOS)
         if (THIS_REQUIRED)
             find_host_package(${target} REQUIRED)
         else()
