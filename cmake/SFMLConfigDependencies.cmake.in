@@ -38,7 +38,7 @@ if(SFML_STATIC_LIBRARIES)
             /opt/local
             /opt/csw
             /opt)
-        
+
 
         # No lookup in environment variables (PATH on Windows), as they may contain wrong library versions
         find_library(${THIS_FRIENDLY_NAME}_LIB NAMES ${THIS_SEARCH_NAMES}
@@ -61,6 +61,8 @@ if(SFML_STATIC_LIBRARIES)
         if(FIND_SFML_OS_LINUX)
             sfml_bind_dependency(TARGET UDev FRIENDLY_NAME "UDev" SEARCH_NAMES "udev" "libudev")
         endif()
+
+        sfml_bind_dependency(TARGET OpenGL FRIENDLY_NAME "OpenGL" SEARCH_NAMES "OpenGL" "opengl32" "GL")
     endif()
 
     # sfml-graphics
@@ -70,7 +72,7 @@ if(SFML_STATIC_LIBRARIES)
 
     # sfml-audio
     if("audio" IN_LIST SFML_FIND_COMPONENTS)
-        sfml_bind_dependency(TARGET OpenAL FRIENDLY_NAME "OpenAL" SEARCH_NAMES "openal" "openal32")
+        sfml_bind_dependency(TARGET OpenAL FRIENDLY_NAME "OpenAL" SEARCH_NAMES "OpenAL" "openal" "openal32")
         sfml_bind_dependency(TARGET Vorbis FRIENDLY_NAME "Ogg" SEARCH_NAMES "ogg")
         sfml_bind_dependency(TARGET Vorbis FRIENDLY_NAME "Vorbis" SEARCH_NAMES "vorbis")
         sfml_bind_dependency(TARGET Vorbis FRIENDLY_NAME "VorbisFile" SEARCH_NAMES "vorbisfile")
