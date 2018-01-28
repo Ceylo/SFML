@@ -1,11 +1,11 @@
-# This script locates the SFML library
+# This script provides the SFML libraries as imported targets
 # ------------------------------------
 #
 # Usage
 # -----
 #
 # When you try to locate the SFML libraries, you must specify which modules you want to use (system, window, graphics, network, audio, main).
-# If none is given, the SFML_LIBRARIES variable will be empty and you'll end up linking to nothing.
+# If none is given, no imported target will be created and you won't be able to link to SFML libraries.
 # example:
 #   find_package(SFML COMPONENTS graphics window system) # find the graphics, window and system modules
 #
@@ -18,42 +18,46 @@
 #
 # By default, the dynamic libraries of SFML will be found. To find the static ones instead,
 # you must set the SFML_STATIC_LIBRARIES variable to TRUE before calling find_package(SFML ...).
-# Since you have to link yourself all the SFML dependencies when you link it statically, the following
-# additional variables are defined: SFML_XXX_DEPENDENCIES and SFML_DEPENDENCIES (see their detailed
-# description below).
-# In case of static linking, the SFML_STATIC macro will also be defined by this script.
+# You don't need to deal with SFML's dependencies when linking your targets against SFML libraries,
+# they will all be configured automatically, even if you use SFML static libraries.
 # example:
 #   set(SFML_STATIC_LIBRARIES TRUE)
 #   find_package(SFML 2 COMPONENTS network system)
 #
-# On Mac OS X if SFML_STATIC_LIBRARIES is not set to TRUE then by default CMake will search for frameworks unless
-# CMAKE_FIND_FRAMEWORK is set to "NEVER" for example. Please refer to CMake documentation for more details.
-# Moreover, keep in mind that SFML frameworks are only available as release libraries unlike dylibs which
+# On macOS by default CMake will search for frameworks. If you want to use static libraries and have installed
+# both SFML frameworks and SFML static libraries, your must set CMAKE_FIND_FRAMEWORK to "NEVER" or "LAST"
+# in addition to setting SFML_STATIC_LIBRARIES to TRUE. Otherwise CMake will check the frameworks bundle config and
+# fail after finding out that it does not provide static libraries. Please refer to CMake documentation for more details.
+#
+# Additionally, keep in mind that SFML frameworks are only available as release libraries unlike dylibs which
 # are available for both release and debug modes.
 #
-# If SFML is not installed in a standard path, you can use the SFML_ROOT CMake (or environment) variable
-# to tell CMake where SFML is.
+# If SFML is not installed in a standard path, you can use the SFML_DIR CMake variable
+# to tell CMake where SFML's config file is located (PREFIX/lib/cmake/SFML for a library-based installation,
+# and PREFIX/SFML.framework/Resources/CMake on macOS for a framework-based installation).
 #
 # Output
 # ------
 #
 # This script defines the following variables:
 # - For each specified module XXX (system, window, graphics, network, audio, main):
-#   - SFML_XXX_LIBRARY_DEBUG:   the name of the debug library of the xxx module (set to SFML_XXX_LIBRARY_RELEASE is no debug version is found)
-#   - SFML_XXX_LIBRARY_RELEASE: the name of the release library of the xxx module (set to SFML_XXX_LIBRARY_DEBUG is no release version is found)
-#   - SFML_XXX_LIBRARY:         the name of the library to link to for the xxx module (includes both debug and optimized names if necessary)
 #   - SFML_XXX_FOUND:           true if either the debug or release library of the xxx module is found
-#   - SFML_XXX_DEPENDENCIES:    the list of libraries the module depends on, in case of static linking
-# - SFML_LIBRARIES:    the list of all libraries corresponding to the required modules
 # - SFML_FOUND:        true if all the required modules are found
-# - SFML_INCLUDE_DIR:  the path where SFML headers are located (the directory containing the SFML/Config.hpp file)
-# - SFML_DEPENDENCIES: the list of libraries SFML depends on, in case of static linking
+#
+# And the following targets:
+# - For each specified module XXX (system, window, graphics, network, audio, main):
+#   - sfml-XXX
+# The SFML targets are the same for both Debug and Release build configurations and will automatically provide
+# correct settings based on your currently active build configuration. The SFML targets name also do not change
+# when using dynamic or static SFML libraries.
+#
+# When linking against a SFML target, you do not need to specify indirect dependencies. For example, linking
+# against sfml-graphics will also automatically link against sfml-window and sfml-system.
 #
 # example:
 #   find_package(SFML 2 COMPONENTS system window graphics audio REQUIRED)
-#   include_directories(${SFML_INCLUDE_DIR})
 #   add_executable(myapp ...)
-#   target_link_libraries(myapp ${SFML_LIBRARIES})
+#   target_link_libraries(myapp sfml-graphics sfml-audio)
 
 
 set(FIND_SFML_PATHS
