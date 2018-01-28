@@ -125,8 +125,8 @@ else()
     target_link_libraries(sfml-graphics PRIVATE OpenGL)
 
     if(SFML_OS_LINUX)
-        find_package(X11 REQUIRED)
-        target_link_libraries(sfml-graphics PRIVATE ${X11_LIBRARIES})
+        # Target X11 already defined for Window component so no sfml_find_package() here
+        target_link_libraries(sfml-graphics PRIVATE X11)
     endif()
 endif()
 
