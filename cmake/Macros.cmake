@@ -259,7 +259,7 @@ if(CMAKE_VS_PLATFORM_NAME STREQUAL "Tegra-Android")
 endif()
 
 # Find the requested package and make an INTERFACE library from it
-# Usage: sfml_find_package(wanted_target_name [REQUIRED]
+# Usage: sfml_find_package(wanted_target_name
 #                          [INCLUDE "OPENGL_INCLUDE_DIR"]
 #                          [LINK "OPENGL_gl_LIBRARY"])
 function(sfml_find_package)
@@ -271,23 +271,15 @@ function(sfml_find_package)
         message(FATAL_ERROR "Target '${target}' is already defined")
     endif()
 
-    cmake_parse_arguments(THIS "REQUIRED" "" "INCLUDE;LINK" ${ARGN})
+    cmake_parse_arguments(THIS "" "" "INCLUDE;LINK" ${ARGN})
     if (THIS_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unknown arguments when calling sfml_import_library: ${THIS_UNPARSED_ARGUMENTS}")
     endif()
 
     if (SFML_OS_ANDROID OR SFML_OS_IOS)
-        if (THIS_REQUIRED)
-            find_host_package(${target} REQUIRED)
-        else()
-            find_host_package(${target})
-        endif()
+        find_host_package(${target} REQUIRED)
     else()
-        if (THIS_REQUIRED)
-            find_package(${target} REQUIRED)
-        else()
-            find_package(${target})
-        endif()
+        find_package(${target} REQUIRED)
     endif()
 
     add_library(${target} INTERFACE)

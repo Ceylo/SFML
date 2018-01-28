@@ -67,10 +67,10 @@ endif()
 
 # find external libraries
 if(NOT SFML_OS_IOS)
-    sfml_find_package(OpenAL REQUIRED INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
+    sfml_find_package(OpenAL INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
 endif()
-sfml_find_package(Vorbis REQUIRED INCLUDE "VORBIS_INCLUDE_DIRS" LINK "VORBIS_LIBRARIES")
-sfml_find_package(FLAC REQUIRED INCLUDE "FLAC_INCLUDE_DIR" LINK "FLAC_LIBRARY")
+sfml_find_package(Vorbis INCLUDE "VORBIS_INCLUDE_DIRS" LINK "VORBIS_LIBRARIES")
+sfml_find_package(FLAC INCLUDE "FLAC_INCLUDE_DIR" LINK "FLAC_LIBRARY")
 
 # avoids warnings in vorbisfile.h
 target_compile_definitions(Vorbis INTERFACE "OV_EXCLUDE_STATIC_CALLBACKS")

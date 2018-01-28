@@ -114,14 +114,14 @@ endif()
 # find external libraries
 if(SFML_OPENGL_ES)
     if (SFML_OS_LINUX)
-        sfml_find_package(EGL REQUIRED INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
-        sfml_find_package(GLES REQUIRED INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
+        sfml_find_package(EGL INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
+        sfml_find_package(GLES INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
         target_link_libraries(sfml-graphics PRIVATE EGL GLES)
     elseif(SFML_OS_IOS)
         target_link_libraries(sfml-graphics PRIVATE "-framework OpenGLES")
     endif()
 else()
-    # Target OpenGL already defined in for Window component so no sfml_find_package() here
+    # Target OpenGL already defined for Window component so no sfml_find_package() here
     target_link_libraries(sfml-graphics PRIVATE OpenGL)
 
     if(SFML_OS_LINUX)
@@ -134,7 +134,7 @@ if(SFML_OS_ANDROID)
     target_link_libraries(sfml-graphics PRIVATE z EGL GLESv1_CM)
 endif()
 
-sfml_find_package(Freetype REQUIRED INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")
+sfml_find_package(Freetype INCLUDE "FREETYPE_INCLUDE_DIRS" LINK "FREETYPE_LIBRARY")
 target_link_libraries(sfml-graphics PRIVATE Freetype)
 
 # add preprocessor symbols
