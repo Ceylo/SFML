@@ -1,7 +1,24 @@
 
-set(SFML_IS_FRAMEWORK_INSTALL "@SFML_BUILD_FRAMEWORKS@")
+set(FIND_SFML_PATHS
+    "${CMAKE_CURRENT_LIST_DIR}/../.."
+    ${SFML_ROOT}
+    $ENV{SFML_ROOT}
+    ~/Library/Frameworks
+    /Library/Frameworks
+    /usr/local
+    /usr
+    /sw
+    /opt/local
+    /opt/csw
+    /opt)
 
+find_path(SFML_DOC_DIR SFML.tag
+          PATH_SUFFIXES SFML/doc share/SFML/doc
+          PATHS ${FIND_SFML_PATHS})
+
+# Choose which target definitions must be imported
 if (SFML_STATIC_LIBRARIES)
+	set(SFML_IS_FRAMEWORK_INSTALL "@SFML_BUILD_FRAMEWORKS@")
     if (SFML_IS_FRAMEWORK_INSTALL)
         message(WARNING "Static frameworks are not supported by SFML. Clear SFML_DIR cache entry, \
 and either change SFML_STATIC_LIBRARIES or CMAKE_FIND_FRAMEWORK before calling find_package(SFML)")
@@ -12,11 +29,14 @@ else()
 endif()
 set(targets_config_file "${CMAKE_CURRENT_LIST_DIR}/SFML${config_name}Targets.cmake")
 
+# Generate imported targets for SFML and its dependencies
 if (EXISTS "${targets_config_file}")
     include("${targets_config_file}")
     include("${CMAKE_CURRENT_LIST_DIR}/SFMLConfigDependencies.cmake")
 
     message(STATUS "Found SFML @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@ in ${CMAKE_CURRENT_LIST_DIR}")
+    set(SFML_FOUND TRUE)
 else()
+    message(WARNING "Requested SFML configuration was not found")
     set(SFML_FOUND FALSE)
 endif()
