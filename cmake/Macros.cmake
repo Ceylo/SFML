@@ -211,12 +211,12 @@ macro(sfml_add_example target)
 
     # add the install rule
     install(TARGETS ${target}
-            RUNTIME DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples
-            BUNDLE DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
+            RUNTIME DESTINATION ${SFML_MISC_INSTALL_PREFIX}/examples/${target} COMPONENT examples
+            BUNDLE DESTINATION ${SFML_MISC_INSTALL_PREFIX}/examples/${target} COMPONENT examples)
 
     # install the example's source code
     install(FILES ${THIS_SOURCES}
-            DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
+            DESTINATION ${SFML_MISC_INSTALL_PREFIX}/examples/${target}
             COMPONENT examples)
 
     if (THIS_RESOURCES_DIR)
@@ -227,7 +227,7 @@ macro(sfml_add_example target)
             message(FATAL_ERROR "Given resources directory to install does not exist: ${THIS_RESOURCES_DIR}")
         endif()
         install(DIRECTORY ${THIS_RESOURCES_DIR}
-                DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
+                DESTINATION ${SFML_MISC_INSTALL_PREFIX}/examples/${target}
                 COMPONENT examples)
     endif()
 
