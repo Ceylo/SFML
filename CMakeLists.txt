@@ -430,9 +430,6 @@ endif()
 
 install(FILES license.md DESTINATION ${SFML_MISC_INSTALL_PREFIX})
 install(FILES readme.md DESTINATION ${SFML_MISC_INSTALL_PREFIX})
-if(NOT SFML_OS_ANDROID)
-    install(FILES cmake/Modules/FindSFML.cmake DESTINATION ${SFML_MISC_INSTALL_PREFIX}/cmake/Modules)
-endif()
 
 # install 3rd-party libraries and tools
 if(SFML_OS_WINDOWS)
