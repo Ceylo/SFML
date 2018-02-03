@@ -206,7 +206,7 @@ macro(sfml_add_example target)
 
     # link the target to its SFML dependencies
     if(THIS_DEPENDS)
-        target_link_libraries(${target} ${THIS_DEPENDS})
+        target_link_libraries(${target} PRIVATE ${THIS_DEPENDS})
     endif()
 
     # add the install rule
