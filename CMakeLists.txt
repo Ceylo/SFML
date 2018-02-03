@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 
 # define a macro that helps defining an option
 macro(sfml_set_option var default type docstring)
@@ -17,9 +17,7 @@ sfml_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 
 # Suppress Mac OS X RPATH warnings and adopt new related behaviors
-if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-    cmake_policy(SET CMP0042 NEW)
-endif()
+cmake_policy(SET CMP0042 NEW)
 
 # add some default value for some additional macOS variable
 # note that those variables are ignored on other systems
