@@ -239,11 +239,12 @@ else()
     sfml_find_package(OpenGL INCLUDE "OPENGL_INCLUDE_DIR" LINK "OPENGL_gl_LIBRARY")
     target_link_libraries(sfml-window PRIVATE OpenGL)
 endif()
+
 if(SFML_OS_WINDOWS AND NOT SFML_COMPILER_MSVC)
     include(CheckIncludeFile)
     check_include_file(dinput.h DINPUT_H_FOUND)
     if(NOT DINPUT_H_FOUND)
-        include_directories("${PROJECT_SOURCE_DIR}/extlibs/headers/mingw")
+        target_include_directories(sfml-window PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/mingw")
     endif()
 endif()
 
