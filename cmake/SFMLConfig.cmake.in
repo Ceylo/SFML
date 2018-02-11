@@ -55,7 +55,7 @@
 # against sfml-graphics will also automatically link against sfml-window and sfml-system.
 #
 # example:
-#   find_package(SFML 2 COMPONENTS system window graphics audio REQUIRED)
+#   find_package(SFML 2 COMPONENTS graphics audio REQUIRED)
 #   add_executable(myapp ...)
 #   target_link_libraries(myapp sfml-graphics sfml-audio)
 
@@ -79,6 +79,21 @@ set(FIND_SFML_PATHS
 find_path(SFML_DOC_DIR SFML.tag
           PATH_SUFFIXES SFML/doc share/SFML/doc
           PATHS ${FIND_SFML_PATHS})
+
+
+# Update requested components (eg. request window component if graphics component was requested)
+set(FIND_SFML_SYSTEM_DEPENDENCIES "")
+set(FIND_SFML_AUDIO_DEPENDENCIES system)
+set(FIND_SFML_NETWORK_DEPENDENCIES system)
+set(FIND_SFML_WINDOW_DEPENDENCIES system)
+set(FIND_SFML_GRAPHICS_DEPENDENCIES window system)
+set(FIND_SFML_ADDITIONAL_COMPONENTS "")
+foreach(component ${SFML_FIND_COMPONENTS})
+    string(TOUPPER "${component}" UPPER_COMPONENT)
+    list(APPEND FIND_SFML_ADDITIONAL_COMPONENTS ${FIND_SFML_${UPPER_COMPONENT}_DEPENDENCIES})
+endforeach()
+list(APPEND SFML_FIND_COMPONENTS ${FIND_SFML_ADDITIONAL_COMPONENTS})
+list(REMOVE_DUPLICATES SFML_FIND_COMPONENTS)
 
 # Choose which target definitions must be imported
 if (SFML_STATIC_LIBRARIES)
