@@ -21,19 +21,21 @@ cmake_policy(SET CMP0042 NEW)
 
 # add some default value for some additional macOS variable
 # note that those variables are ignored on other systems
-if(NOT CMAKE_OSX_ARCHITECTURES)
-    set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture to build; 64-bit is expected" FORCE)
-endif()
-if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "macOS deployement target; 10.7+ is expected" FORCE)
-endif()
-if(NOT CMAKE_OSX_SYSROOT)
-    # query the path to the default SDK, will fail on non-macOS, but it's okay.
-    execute_process(COMMAND xcodebuild -sdk macosx -version Path
-                    COMMAND head -n 1
-                    COMMAND tr -d '\n'
-                    OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
-                    ERROR_QUIET)
+if (NOT CMAKE_TOOLCHAIN_FILE)
+    if(NOT CMAKE_OSX_ARCHITECTURES)
+        set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture to build; 64-bit is expected" FORCE)
+    endif()
+    if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "macOS deployement target; 10.7+ is expected" FORCE)
+    endif()
+    if(NOT CMAKE_OSX_SYSROOT)
+        # query the path to the default SDK, will fail on non-macOS, but it's okay.
+        execute_process(COMMAND xcodebuild -sdk macosx -version Path
+                        COMMAND head -n 1
+                        COMMAND tr -d '\n'
+                        OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
+                        ERROR_QUIET)
+    endif()
 endif()
 
 # set Android specific options

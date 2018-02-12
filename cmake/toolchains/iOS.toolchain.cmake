@@ -79,7 +79,7 @@ set (CMAKE_C_OSX_CURRENT_VERSION_FLAG "-current_version ")
 set (CMAKE_CXX_OSX_COMPATIBILITY_VERSION_FLAG "${CMAKE_C_OSX_COMPATIBILITY_VERSION_FLAG}")
 set (CMAKE_CXX_OSX_CURRENT_VERSION_FLAG "${CMAKE_C_OSX_CURRENT_VERSION_FLAG}")
 
-# Hidden visibilty is required for cxx on iOS 
+# Hidden visibilty is required for cxx on iOS
 set (CMAKE_C_FLAGS_INIT "")
 set (CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
 
@@ -107,12 +107,6 @@ if (NOT DEFINED IOS_PLATFORM)
 endif (NOT DEFINED IOS_PLATFORM)
 set (IOS_PLATFORM ${IOS_PLATFORM} CACHE STRING "Type of iOS Platform")
 
-# Setup building for arm64 or not
-if (NOT DEFINED BUILD_ARM64)
-    set (BUILD_ARM64 true)
-endif (NOT DEFINED BUILD_ARM64)
-set (BUILD_ARM64 ${BUILD_ARM64} CACHE STRING "Build arm64 arch or not")
-
 # Check the platform selection and setup for developer root
 if (${IOS_PLATFORM} STREQUAL OS)
         message (STATUS "Targeting iPhone platform")
@@ -139,23 +133,13 @@ else (${IOS_PLATFORM} STREQUAL OS)
 endif (${IOS_PLATFORM} STREQUAL OS)
 
 # Setup iOS developer location unless specified manually with CMAKE_IOS_DEVELOPER_ROOT
-# Note Xcode 4.3 changed the installation location, choose the most recent one available
 exec_program(/usr/bin/xcode-select ARGS -print-path OUTPUT_VARIABLE CMAKE_XCODE_DEVELOPER_DIR)
-set (XCODE_POST_43_ROOT "${CMAKE_XCODE_DEVELOPER_DIR}/Platforms/${IOS_PLATFORM_LOCATION}/Developer")
-set (XCODE_PRE_43_ROOT "/Developer/Platforms/${IOS_PLATFORM_LOCATION}/Developer")
-if (NOT DEFINED CMAKE_IOS_DEVELOPER_ROOT)
-	if (EXISTS ${XCODE_POST_43_ROOT})
-		set (CMAKE_IOS_DEVELOPER_ROOT ${XCODE_POST_43_ROOT})
-	elseif(EXISTS ${XCODE_PRE_43_ROOT})
-		set (CMAKE_IOS_DEVELOPER_ROOT ${XCODE_PRE_43_ROOT})
-	endif (EXISTS ${XCODE_POST_43_ROOT})
-endif (NOT DEFINED CMAKE_IOS_DEVELOPER_ROOT)
-set (CMAKE_IOS_DEVELOPER_ROOT ${CMAKE_IOS_DEVELOPER_ROOT} CACHE PATH "Location of iOS Platform")
+set (CMAKE_IOS_DEVELOPER_ROOT "${CMAKE_XCODE_DEVELOPER_DIR}/Platforms/${IOS_PLATFORM_LOCATION}/Developer" CACHE PATH "Location of iOS Platform")
 
 # Find and use the most recent iOS sdk unless specified manually with CMAKE_IOS_SDK_ROOT
 if (NOT DEFINED CMAKE_IOS_SDK_ROOT)
 	file (GLOB _CMAKE_IOS_SDKS "${CMAKE_IOS_DEVELOPER_ROOT}/SDKs/*")
-	if (_CMAKE_IOS_SDKS) 
+	if (_CMAKE_IOS_SDKS)
 		list (SORT _CMAKE_IOS_SDKS)
 		list (REVERSE _CMAKE_IOS_SDKS)
 		list (GET _CMAKE_IOS_SDKS 0 CMAKE_IOS_SDK_ROOT)
@@ -168,9 +152,9 @@ set (CMAKE_IOS_SDK_ROOT ${CMAKE_IOS_SDK_ROOT} CACHE PATH "Location of the select
 
 # Set the sysroot default to the most recent SDK
 set (CMAKE_OSX_SYSROOT ${CMAKE_IOS_SDK_ROOT} CACHE PATH "Sysroot used for iOS support")
-message (STATUS "iOS sysroot=${CMAKE_OSX_SYSROOT}")
+message (STATUS "iOS sysroot: ${CMAKE_OSX_SYSROOT}")
 
-# set the architecture for iOS 
+# set the architecture for iOS
 if (${IOS_PLATFORM} STREQUAL OS)
     set (OSX_UNIVERSAL true)
     set (IOS_ARCH armv7 armv7s arm64)
@@ -181,7 +165,7 @@ elseif (${IOS_PLATFORM} STREQUAL SIMULATOR64)
 endif (${IOS_PLATFORM} STREQUAL OS)
 
 set (CMAKE_OSX_ARCHITECTURES ${IOS_ARCH} CACHE string  "Build architecture for iOS")
-message (STATUS "iOS arches=${IOS_ARCH}")
+message (STATUS "iOS architectures: ${IOS_ARCH}")
 
 # Set the find root to the iOS developer roots and to user defined paths
 set (CMAKE_FIND_ROOT_PATH ${CMAKE_IOS_DEVELOPER_ROOT} ${CMAKE_IOS_SDK_ROOT} ${CMAKE_PREFIX_PATH} CACHE string  "iOS find search path root")

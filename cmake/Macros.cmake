@@ -135,9 +135,11 @@ macro(sfml_add_library target)
         endif()
     endif()
 
-    # enable automatic reference counting on iOS
     if (SFML_OS_IOS)
-        set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
+         # enable automatic reference counting on iOS
+        set_target_properties(${target} PROPERTIES
+            XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES
+            XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 10.2)
     endif()
 
     # sfml-activity library is our bootstrap activity and must not depend on stlport_shared
