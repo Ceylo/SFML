@@ -207,6 +207,14 @@ macro(sfml_add_example target)
         add_executable(${target} ${target_input})
     endif()
 
+    if (SFML_OS_IOS)
+        # enable automatic reference counting on iOS
+        set_target_properties(${target} PROPERTIES
+            XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES
+            XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 10.2
+            MACOSX_BUNDLE TRUE)
+    endif()
+
     # set the debug suffix
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
 
