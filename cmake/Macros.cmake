@@ -1,5 +1,10 @@
 include(CMakeParseArguments)
 
+# This little macro lets you set any Xcode specific property
+macro (sfml_set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
+    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
+endmacro ()
+
 # set the appropriate standard library on each platform for the given target
 # ex: sfml_set_stdlib(sfml-system)
 function(sfml_set_stdlib target)
@@ -14,7 +19,7 @@ function(sfml_set_stdlib target)
 
     if (SFML_OS_MACOSX)
         if (${CMAKE_GENERATOR} MATCHES "Xcode")
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+            sfml_set_xcode_property(${target} CLANG_CXX_LIBRARY "libc++")
         else()
             target_compile_options(${target} PRIVATE "-stdlib=libc++")
             target_link_libraries(${target} PRIVATE "-stdlib=libc++")
@@ -22,10 +27,22 @@ function(sfml_set_stdlib target)
     endif()
 endfunction()
 
-# This little macro lets you set any Xcode specific property
-macro (sfml_set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
-    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
-endmacro ()
+function(sfml_set_common_ios_properties target)
+    # enable automatic reference counting on iOS
+    sfml_set_xcode_property(${target} CLANG_ENABLE_OBJC_ARC YES)
+    sfml_set_xcode_property(${target} IPHONEOS_DEPLOYMENT_TARGET "${SFML_IOS_DEPLOYMENT_TARGET}")
+    sfml_set_xcode_property(${target} CODE_SIGN_IDENTITY "${SFML_CODE_SIGN_IDENTITY}")
+
+    get_target_property(target_type ${target} TYPE)
+    if (target_type STREQUAL "EXECUTABLE")
+        set_target_properties(${target} PROPERTIES
+            MACOSX_BUNDLE TRUE # Bare executables are not usable on iOS, only bundle applications
+            MACOSX_BUNDLE_GUI_IDENTIFIER "org.sfml-dev.${target}" # If missing, trying to launch an example in simulator will make Xcode crash
+            MACOSX_BUNDLE_BUNDLE_NAME "${target}"
+            MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+        )
+    endif()
+endfunction()
 
 # add a new target which is a SFML library
 # ex: sfml_add_library(sfml-graphics
@@ -141,9 +158,7 @@ macro(sfml_add_library target)
     endif()
 
     if (SFML_OS_IOS)
-         # enable automatic reference counting on iOS
-        sfml_set_xcode_property(${target} CLANG_ENABLE_OBJC_ARC YES)
-        sfml_set_xcode_property(${target} IPHONEOS_DEPLOYMENT_TARGET "${SFML_IOS_DEPLOYMENT_TARGET}")
+        sfml_set_common_ios_properties(${target})
     endif()
 
     # sfml-activity library is our bootstrap activity and must not depend on stlport_shared
@@ -212,13 +227,7 @@ macro(sfml_add_example target)
     endif()
 
     if (SFML_OS_IOS)
-        # enable automatic reference counting on iOS
-        sfml_set_xcode_property(${target} CLANG_ENABLE_OBJC_ARC YES)
-        sfml_set_xcode_property(${target} IPHONEOS_DEPLOYMENT_TARGET "${SFML_IOS_DEPLOYMENT_TARGET}")
-
-        # Bare executables are not usable on iOS, only bundle applications
-        set_target_properties(${target} PROPERTIES MACOSX_BUNDLE TRUE)
-        set_target_properties(${target} PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER org.sfml-dev.${target})
+        sfml_set_common_ios_properties(${target})
     endif()
 
     # set the debug suffix
