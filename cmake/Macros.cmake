@@ -218,6 +218,7 @@ macro(sfml_add_example target)
 
         # Bare executables are not usable on iOS, only bundle applications
         set_target_properties(${target} PROPERTIES MACOSX_BUNDLE TRUE)
+        set_target_properties(${target} PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER org.sfml-dev.${target})
     endif()
 
     # set the debug suffix
