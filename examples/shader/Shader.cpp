@@ -6,6 +6,9 @@
 #include <vector>
 #include <cmath>
 
+#ifdef SFML_SYSTEM_IOS
+#include <SFML/Main.hpp>
+#endif
 
 const sf::Font* Effect::s_font = NULL;
 

@@ -4,6 +4,10 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#ifdef SFML_SYSTEM_IOS
+#include <SFML/Main.hpp>
+#endif
+
 #include <cmath>
 #include <ctime>
 #include <cstdlib>

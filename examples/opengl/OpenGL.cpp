@@ -5,6 +5,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
+#ifdef SFML_SYSTEM_IOS
+#include <SFML/Main.hpp>
+#endif
+
 #ifndef GL_SRGB8_ALPHA8
 #define GL_SRGB8_ALPHA8 0x8C43
 #endif

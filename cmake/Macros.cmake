@@ -228,6 +228,7 @@ macro(sfml_add_example target)
 
     if (SFML_OS_IOS)
         sfml_set_common_ios_properties(${target})
+        target_link_libraries(${target} PRIVATE sfml-main)
     endif()
 
     # set the debug suffix
