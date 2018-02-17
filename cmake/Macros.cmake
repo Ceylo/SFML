@@ -269,30 +269,6 @@ macro(sfml_add_example target)
 
 endmacro()
 
-# macro to find packages on the host OS
-# this is the same as in the toolchain file, which is here for Nsight Tegra VS
-# since it won't use the Android toolchain file
-if(CMAKE_VS_PLATFORM_NAME STREQUAL "Tegra-Android")
-    macro(find_host_package)
-        set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-        set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
-        set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
-        if(CMAKE_HOST_WIN32)
-            set(WIN32 1)
-            set(UNIX)
-        elseif(CMAKE_HOST_APPLE)
-            set(APPLE 1)
-            set(UNIX)
-        endif()
-        find_package(${ARGN})
-        set(WIN32)
-        set(APPLE)
-        set(UNIX 1)
-        set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
-        set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-        set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-    endmacro()
-endif()
 
 # Create an interface library for an external dependency. This virtual target can provide
 # link specifications and include directories to be used by dependees.
@@ -353,7 +329,7 @@ function(sfml_find_package)
         message(FATAL_ERROR "Unknown arguments when calling sfml_import_library: ${THIS_UNPARSED_ARGUMENTS}")
     endif()
 
-    if (SFML_OS_ANDROID OR SFML_OS_IOS)
+    if (SFML_OS_IOS)
         find_host_package(${target} REQUIRED)
     else()
         find_package(${target} REQUIRED)
