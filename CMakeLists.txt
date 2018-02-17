@@ -116,6 +116,11 @@ else()
     sfml_set_option(SFML_DEPENDENCIES_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" PATH "External libraries (FLAC, Freetype, Vorbis, ...) installation directory")
 endif()
 
+if(SFML_OS_IOS)
+    # At the moment the minimal deployement target version is 10.2 only because the externals for iOS were built with that requirement.
+    sfml_set_option(SFML_IOS_DEPLOYMENT_TARGET "10.2" STRING "The minimal iOS version that will be able to run the built binaries. Cannot be lower than 10.2.")
+endif()
+
 # Android options
 if(SFML_OS_ANDROID)
     # make sure there's the android library available
