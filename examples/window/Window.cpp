@@ -4,6 +4,10 @@
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 
+#ifdef SFML_OPENGL_ES
+#define glClearDepth glClearDepthf
+#define glFrustum glFrustumf
+#endif
 
 ////////////////////////////////////////////////////////////
 /// Entry point of application

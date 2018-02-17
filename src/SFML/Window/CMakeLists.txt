@@ -230,6 +230,7 @@ if(SFML_OS_LINUX OR SFML_OS_FREEBSD)
 endif()
 
 if(SFML_OPENGL_ES)
+    target_compile_definitions(sfml-window PUBLIC "SFML_OPENGL_ES")
     if(SFML_OS_IOS)
         target_link_libraries(sfml-window PRIVATE "-framework OpenGLES")
     elseif(SFML_OS_ANDROID)

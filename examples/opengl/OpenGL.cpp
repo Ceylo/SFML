@@ -9,6 +9,10 @@
 #define GL_SRGB8_ALPHA8 0x8C43
 #endif
 
+#ifdef SFML_OPENGL_ES
+#define glClearDepth glClearDepthf
+#define glFrustum glFrustumf
+#endif
 
 ////////////////////////////////////////////////////////////
 /// Entry point of application
