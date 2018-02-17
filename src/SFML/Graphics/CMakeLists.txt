@@ -105,14 +105,10 @@ if(SFML_OS_WINDOWS OR SFML_OS_MACOSX OR SFML_OS_IOS OR SFML_OS_ANDROID)
 endif()
 
 # find external libraries
-if(SFML_OPENGL_ES)
-    if (SFML_OS_LINUX)
-        sfml_find_package(EGL INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
-        sfml_find_package(GLES INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
-        target_link_libraries(sfml-graphics PRIVATE EGL GLES)
-    elseif(SFML_OS_IOS)
-        target_link_libraries(sfml-graphics PRIVATE "-framework OpenGLES")
-    endif()
+if(SFML_OPENGL_ES AND SFML_OS_LINUX)
+    sfml_find_package(EGL INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
+    sfml_find_package(GLES INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
+    target_link_libraries(sfml-graphics PRIVATE EGL GLES)
 else()
     # Target OpenGL already defined for Window component so no sfml_find_package() here
     target_link_libraries(sfml-graphics PRIVATE OpenGL)

@@ -304,7 +304,7 @@ function(sfml_add_external)
     add_library(${target} INTERFACE)
 
     if (THIS_INCLUDE)
-        foreach(include_dir IN LISTS "${THIS_INCLUDE}")
+        foreach(include_dir IN LISTS THIS_INCLUDE)
             if (NOT include_dir)
                 message(FATAL_ERROR "No path given for include dir ${THIS_INCLUDE}")
             endif()
@@ -313,7 +313,7 @@ function(sfml_add_external)
     endif()
 
     if (THIS_LINK)
-        foreach(link_item IN LISTS ${THIS_LINK})
+        foreach(link_item IN LISTS THIS_LINK)
             if (NOT link_item)
                 message(FATAL_ERROR "Missing item in ${THIS_LINK}")
             endif()
@@ -348,7 +348,23 @@ function(sfml_find_package)
         find_package(${target} REQUIRED)
     endif()
 
-    sfml_add_external(${target} INCLUDE ${THIS_INCLUDE} LINK ${THIS_LINK})
+    # Make sure to interpret the items in INCLUDE and LINK parameters. sfml_add_external()
+    # does not interpret given items in order to also accept parameters that must not be interpreted
+    set(LINK_LIST "")
+    if (THIS_LINK)
+        foreach(link_item IN LISTS THIS_LINK)
+            list(APPEND LINK_LIST "${${link_item}}")
+        endforeach()
+    endif()
+
+    set(INCLUDE_LIST "")
+    if (THIS_INCLUDE)
+        foreach(include_dir IN LISTS THIS_INCLUDE)
+            list(APPEND INCLUDE_LIST "${${include_dir}}")
+        endforeach()
+    endif()
+
+    sfml_add_external(${target} INCLUDE ${INCLUDE_LIST} LINK ${LINK_LIST})
 endfunction()
 
 # Generate a SFMLConfig.cmake file (and associated files) from the targets registered against
