@@ -113,7 +113,7 @@ endif()
 
 # find external libraries
 if(SFML_OPENGL_ES)
-    if (SFML_OS_LINUX)
+    if(SFML_OS_LINUX)
         sfml_find_package(EGL INCLUDE "EGL_INCLUDE_DIR" LINK "EGL_LIBRARY")
         sfml_find_package(GLES INCLUDE "GLES_INCLUDE_DIR" LINK "GLES_LIBRARY")
         target_link_libraries(sfml-graphics PRIVATE EGL GLES)
