@@ -76,9 +76,6 @@ if(SFML_OS_WINDOWS)
         ${SRCROOT}/Win32/WindowImplWin32.hpp
     )
     source_group("windows" FILES ${PLATFORM_SRC})
-
-    # make sure that we use the Unicode version of the Win API functions
-    add_definitions(-DUNICODE -D_UNICODE)
 elseif(SFML_OS_LINUX OR SFML_OS_FREEBSD)
     set(PLATFORM_SRC
         ${SRCROOT}/Unix/CursorImpl.hpp
@@ -260,6 +257,9 @@ if(SFML_OS_LINUX)
     target_link_libraries(sfml-window PRIVATE UDev)
 elseif(SFML_OS_WINDOWS)
     target_link_libraries(sfml-window PRIVATE winmm gdi32)
+
+    # make sure that we use the Unicode version of the Win API functions
+    target_compile_definitions(sfml-window PRIVATE "UNICODE" "_UNICODE")
 elseif(SFML_OS_FREEBSD)
     target_link_libraries(sfml-window PRIVATE usbhid)
 elseif(SFML_OS_MACOSX)
