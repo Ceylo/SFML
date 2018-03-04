@@ -34,7 +34,8 @@ if(SFML_STATIC_LIBRARIES)
     endfunction()
 
     # sfml-window
-    if("window" IN_LIST SFML_FIND_COMPONENTS)
+    list(FIND SFML_FIND_COMPONENTS "window" FIND_SFML_WINDOW_COMPONENT_INDEX)
+    if(FIND_SFML_WINDOW_COMPONENT_INDEX GREATER -1)
         if(FIND_SFML_OS_LINUX OR FIND_SFML_OS_FREEBSD)
             sfml_bind_dependency(TARGET X11 FRIENDLY_NAME "X11" SEARCH_NAMES "X11")
             sfml_bind_dependency(TARGET X11 FRIENDLY_NAME "Xrandr" SEARCH_NAMES "Xrandr")
@@ -52,12 +53,14 @@ if(SFML_STATIC_LIBRARIES)
     endif()
 
     # sfml-graphics
-    if("graphics" IN_LIST SFML_FIND_COMPONENTS)
+    list(FIND SFML_FIND_COMPONENTS "graphics" FIND_SFML_GRAPHICS_COMPONENT_INDEX)
+    if(FIND_SFML_GRAPHICS_COMPONENT_INDEX GREATER -1)
         sfml_bind_dependency(TARGET Freetype FRIENDLY_NAME "FreeType" SEARCH_NAMES "freetype")
     endif()
 
     # sfml-audio
-    if("audio" IN_LIST SFML_FIND_COMPONENTS)
+    list(FIND SFML_FIND_COMPONENTS "audio" FIND_SFML_AUDIO_COMPONENT_INDEX)
+    if(FIND_SFML_AUDIO_COMPONENT_INDEX GREATER -1)
         sfml_bind_dependency(TARGET OpenAL FRIENDLY_NAME "OpenAL" SEARCH_NAMES "OpenAL" "openal" "openal32")
         sfml_bind_dependency(TARGET Vorbis FRIENDLY_NAME "Ogg" SEARCH_NAMES "ogg")
         sfml_bind_dependency(TARGET Vorbis FRIENDLY_NAME "Vorbis" SEARCH_NAMES "vorbis")
