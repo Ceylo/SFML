@@ -23,24 +23,27 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 
 # Suppress Mac OS X RPATH warnings and adopt new related behaviors
 cmake_policy(SET CMP0042 NEW)
+if (NOT CMAKE_VERSION VERSION_LESS 3.9)
+    cmake_policy(SET CMP0068 NEW)
+endif()
 
 # add some default value for some additional macOS variable
 # note that those variables are ignored on other systems
 if (NOT CMAKE_TOOLCHAIN_FILE)
-    if(NOT CMAKE_OSX_ARCHITECTURES)
-        set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture to build; 64-bit is expected" FORCE)
-    endif()
-    if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "macOS deployement target; 10.7+ is expected" FORCE)
-    endif()
-    if(NOT CMAKE_OSX_SYSROOT)
-        # query the path to the default SDK, will fail on non-macOS, but it's okay.
-        execute_process(COMMAND xcodebuild -sdk macosx -version Path
-                        COMMAND head -n 1
-                        COMMAND tr -d '\n'
-                        OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
-                        ERROR_QUIET)
-    endif()
+if(NOT CMAKE_OSX_ARCHITECTURES)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture to build; 64-bit is expected" FORCE)
+endif()
+if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7" CACHE STRING "macOS deployement target; 10.7+ is expected" FORCE)
+endif()
+if(NOT CMAKE_OSX_SYSROOT)
+    # query the path to the default SDK, will fail on non-macOS, but it's okay.
+    execute_process(COMMAND xcodebuild -sdk macosx -version Path
+                    COMMAND head -n 1
+                    COMMAND tr -d '\n'
+                    OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
+                    ERROR_QUIET)
+endif()
 endif()
 
 # project name
@@ -98,7 +101,7 @@ if(SFML_OS_MACOSX)
     sfml_set_option(SFML_INSTALL_XCODE_TEMPLATES FALSE BOOL "TRUE to automatically install the Xcode templates, FALSE to do nothing about it. The templates are compatible with Xcode 4 and 5.")
 else()
     # add an option to let the user specify a custom directory for external libraries installation
-    sfml_set_option(SFML_DEPENDENCIES_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" PATH "External libraries (FLAC, Freetype, Vorbis, ...) installation directory")
+    sfml_set_option(SFML_DEPENDENCIES_INSTALL_PREFIX "." PATH "External libraries (FLAC, Freetype, Vorbis, ...) installation directory")
 endif()
 
 if(SFML_OS_IOS)
@@ -411,9 +414,14 @@ else()
 
     # adapt install directory to allow distributing dylibs/frameworks in user's frameworks/application bundle
     # NOTE: it's not required to link against SFML.framework
-    set_target_properties(SFML PROPERTIES
-                          BUILD_WITH_INSTALL_RPATH 1
-                          INSTALL_NAME_DIR "@rpath")
+    set_target_properties(SFML PROPERTIES INSTALL_NAME_DIR "@rpath")
+    if(NOT CMAKE_SKIP_BUILD_RPATH)
+        if (CMAKE_VERSION VERSION_LESS 3.9)
+            set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+        else()
+            set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_NAME_DIR TRUE)
+        endif()
+    endif()
 
     # install rule
     install(TARGETS SFML
@@ -512,7 +520,7 @@ elseif(SFML_OS_IOS)
         endif()
 
         if(SFML_BUILD_AUDIO)
-            install(FILES extlibs/libs-ios/libflac.a
+            install(FILES extlibs/libs-ios/libflac.a 
                           extlibs/libs-ios/libvorbis.a
                           extlibs/libs-ios/libogg.a
                           DESTINATION lib)

@@ -64,9 +64,7 @@ elseif(SFML_OS_ANDROID)
 endif()
 
 # find external libraries
-if(NOT SFML_OS_IOS)
-    sfml_find_package(OpenAL INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
-endif()
+sfml_find_package(OpenAL INCLUDE "OPENAL_INCLUDE_DIR" LINK "OPENAL_LIBRARY")
 sfml_find_package(Vorbis INCLUDE "VORBIS_INCLUDE_DIRS" LINK "VORBIS_LIBRARIES")
 sfml_find_package(FLAC INCLUDE "FLAC_INCLUDE_DIR" LINK "FLAC_LIBRARY")
 
@@ -79,11 +77,7 @@ sfml_add_library(sfml-audio
                  SOURCES ${SRC} ${CODECS_SRC})
 
 # setup dependencies
-if(SFML_OS_IOS)
-    target_link_libraries(sfml-audio PRIVATE "-framework OpenAL")
-else()
-    target_link_libraries(sfml-audio PRIVATE OpenAL)
-endif()
+target_link_libraries(sfml-audio PRIVATE OpenAL)
 
 if(SFML_OS_ANDROID)
     target_link_libraries(sfml-audio PRIVATE android OpenSLES)

@@ -17,10 +17,10 @@
 
 # Options:
 #
-# IOS_PLATFORM = OS (default) or SIMULATOR or SIMULATOR64
+# IOS_PLATFORM = OS (default) or SIMULATOR
 #   This decides if SDKS will be selected from the iPhoneOS.platform or iPhoneSimulator.platform folders
 #   OS - the default, used to build for iPhone and iPad physical devices, which have an arm arch.
-#   SIMULATOR - used to build for the Simulator platforms, which have an x86 arch.
+#   SIMULATOR - used to build for the Simulator platforms, which have an x86_64 arch.
 #
 # IOS_DEVELOPER_ROOT = automatic(default) or /path/to/platform/Developer folder
 #   By default this location is automatcially chosen based on the IOS_PLATFORM value above.
@@ -54,8 +54,8 @@ set (CMAKE_OSX_DEPLOYMENT_TARGET "" CACHE STRING "Force unset of the deployment 
 # Determine the cmake host system version so we know where to find the iOS SDKs
 find_program (CMAKE_UNAME uname /bin /usr/bin /usr/local/bin)
 if (CMAKE_UNAME)
-    exec_program(uname ARGS -r OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_VERSION)
-    string (REGEX REPLACE "^([0-9]+)\\.([0-9]+).*$" "\\1" DARWIN_MAJOR_VERSION "${CMAKE_HOST_SYSTEM_VERSION}")
+	exec_program(uname ARGS -r OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_VERSION)
+	string (REGEX REPLACE "^([0-9]+)\\.([0-9]+).*$" "\\1" DARWIN_MAJOR_VERSION "${CMAKE_HOST_SYSTEM_VERSION}")
 endif (CMAKE_UNAME)
 
 set(CMAKE_C_COMPILER /usr/bin/clang CACHE FILEPATH "" FORCE)
@@ -79,7 +79,7 @@ set (CMAKE_C_OSX_CURRENT_VERSION_FLAG "-current_version ")
 set (CMAKE_CXX_OSX_COMPATIBILITY_VERSION_FLAG "${CMAKE_C_OSX_COMPATIBILITY_VERSION_FLAG}")
 set (CMAKE_CXX_OSX_CURRENT_VERSION_FLAG "${CMAKE_C_OSX_CURRENT_VERSION_FLAG}")
 
-# Hidden visibilty is required for cxx on iOS
+# Hidden visibilty is required for cxx on iOS 
 set (CMAKE_C_FLAGS_INIT "")
 set (CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
 
@@ -98,26 +98,26 @@ set (CMAKE_FIND_LIBRARY_SUFFIXES ".dylib" ".so" ".a")
 # and still cmake didn't fail in CMakeFindBinUtils.cmake (because it isn't rerun)
 # hardcode CMAKE_INSTALL_NAME_TOOL here to install_name_tool, so it behaves as it did before, Alex
 if (NOT DEFINED CMAKE_INSTALL_NAME_TOOL)
-    find_program(CMAKE_INSTALL_NAME_TOOL install_name_tool)
+	find_program(CMAKE_INSTALL_NAME_TOOL install_name_tool)
 endif (NOT DEFINED CMAKE_INSTALL_NAME_TOOL)
 
 # Setup iOS platform unless specified manually with IOS_PLATFORM
 if (NOT DEFINED IOS_PLATFORM)
-    set (IOS_PLATFORM "OS")
+	set (IOS_PLATFORM "OS")
 endif (NOT DEFINED IOS_PLATFORM)
 set (IOS_PLATFORM ${IOS_PLATFORM} CACHE STRING "Type of iOS Platform: OS or SIMULATOR")
 
 # Check the platform selection and setup for developer root
 if (IOS_PLATFORM STREQUAL OS)
-    set (IOS_PLATFORM_LOCATION "iPhoneOS.platform")
+	set (IOS_PLATFORM_LOCATION "iPhoneOS.platform")
 
-    # This causes the installers to properly locate the output libraries
-    set (CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphoneos")
+	# This causes the installers to properly locate the output libraries
+	set (CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphoneos")
 elseif (IOS_PLATFORM STREQUAL SIMULATOR)
-    set (IOS_PLATFORM_LOCATION "iPhoneSimulator.platform")
+	set (IOS_PLATFORM_LOCATION "iPhoneSimulator.platform")
 
-    # This causes the installers to properly locate the output libraries
-    set (CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphonesimulator")
+	# This causes the installers to properly locate the output libraries
+	set (CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphonesimulator")
 else ()
     message (FATAL_ERROR "Unsupported IOS_PLATFORM value '${IOS_PLATFORM}' selected. Please choose OS or SIMULATOR")
 endif ()
@@ -143,7 +143,7 @@ set (IOS_SDK_ROOT ${IOS_SDK_ROOT} CACHE PATH "Location of the selected iOS SDK")
 # Set the sysroot default to the most recent SDK
 set (CMAKE_OSX_SYSROOT ${IOS_SDK_ROOT} CACHE PATH "Sysroot used for iOS support")
 
-# set the architecture for iOS
+# set the architecture for iOS 
 if (${IOS_PLATFORM} STREQUAL OS)
     set (OSX_UNIVERSAL true)
     set (IOS_ARCH arm64)
@@ -151,7 +151,7 @@ elseif (${IOS_PLATFORM} STREQUAL SIMULATOR)
     set (IOS_ARCH x86_64)
 endif (${IOS_PLATFORM} STREQUAL OS)
 
-set (CMAKE_OSX_ARCHITECTURES ${IOS_ARCH} CACHE STRING "Build architecture for iOS")
+set (CMAKE_OSX_ARCHITECTURES ${IOS_ARCH} CACHE STRING "Build architecture for iOS" FORCE)
 
 # Set the find root to the iOS developer roots and to user defined paths
 set (CMAKE_FIND_ROOT_PATH ${IOS_DEVELOPER_ROOT} ${IOS_SDK_ROOT} ${CMAKE_PREFIX_PATH} CACHE STRING "iOS find search path root")
@@ -174,17 +174,15 @@ set (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 # This macro lets you find executable programs on the host system
 macro (find_host_package)
-    set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-    set (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
-    set (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
-    set (CMAKE_FIND_FRAMEWORK LAST)
-    set (IOS FALSE)
+	set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+	set (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
+	set (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
+	set (IOS FALSE)
 
-    find_package(${ARGN})
+	find_package(${ARGN})
 
-    set (IOS TRUE)
-    set (CMAKE_FIND_FRAMEWORK FIRST)
-    set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
-    set (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-    set (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+	set (IOS TRUE)
+	set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
+	set (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+	set (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endmacro (find_host_package)
