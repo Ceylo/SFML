@@ -1,9 +1,6 @@
 
-set(SRCROOT ${PROJECT_SOURCE_DIR}/examples/ios)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
-
 # All source files
-set(SRC ${SRCROOT}/main.cpp)
+set(SRC main.cpp)
 
 # Use the resources from the android example
 set(RESOURCES
@@ -15,12 +12,8 @@ set(RESOURCES
 set_source_files_properties( ${RESOURCES} PROPERTIES
                               MACOSX_PACKAGE_LOCATION Resources )
 
-# Define the window target
-sfml_add_example(ios_demo GUI_APP
-                 SOURCES ${SRC} ${RESOURCES}
-                 DEPENDS sfml-window sfml-system sfml-graphics sfml-audio
-                         "-framework OpenGLES")
-
-# The app needs an identifier and signing to work correctly
-SET_XCODE_PROPERTY(ios_demo CODE_SIGN_IDENTITY "iPhone Developer")
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.sfml.ios_demo")
+# Define the iOSdemo target
+sfml_add_example(iOSdemo GUI_APP
+                 SOURCES ${SRC}
+                 BUNDLE_RESOURCES ${RESOURCES}
+                 DEPENDS sfml-graphics sfml-audio)

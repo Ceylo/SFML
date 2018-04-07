@@ -29,7 +29,6 @@ endif()
 
 # add some default value for some additional macOS variable
 # note that those variables are ignored on other systems
-if (NOT CMAKE_TOOLCHAIN_FILE)
 if(NOT CMAKE_OSX_ARCHITECTURES)
     set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "macOS architecture to build; 64-bit is expected" FORCE)
 endif()
@@ -43,7 +42,6 @@ if(NOT CMAKE_OSX_SYSROOT)
                     COMMAND tr -d '\n'
                     OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
                     ERROR_QUIET)
-endif()
 endif()
 
 # project name
@@ -520,7 +518,7 @@ elseif(SFML_OS_IOS)
         endif()
 
         if(SFML_BUILD_AUDIO)
-            install(FILES extlibs/libs-ios/libflac.a 
+            install(FILES extlibs/libs-ios/libflac.a
                           extlibs/libs-ios/libvorbis.a
                           extlibs/libs-ios/libogg.a
                           DESTINATION lib)
